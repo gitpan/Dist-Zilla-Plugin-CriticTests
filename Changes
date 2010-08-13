@@ -1,6 +1,7 @@
 Revision history for Dist::Zilla::Plugin::CriticTests
 
-1.102250  2010-08-13 06:08:57 Europe/Paris
+1.102250  2010-08-13 19:06:51 Europe/Paris
+ - ability to provide your own perlcriticrc (stephen r. scaffidi)
 
 1.100140  2010-01-14 18:17:53 Europe/Paris
  - requiring perl 5.8.x

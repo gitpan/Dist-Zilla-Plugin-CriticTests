@@ -19,7 +19,7 @@ BEGIN {
 use Moose;
 use Moose::Util qw( get_all_attribute_values );
 
-# this makes it add the sections in __DATA__ as dzil "files"
+# this makes dzil add the sections in __DATA__ as "files"
 extends 'Dist::Zilla::Plugin::InlineFiles';
 
 # and when the time comes, treat them like templates
@@ -27,6 +27,7 @@ with qw(
     Dist::Zilla::Role::FileMunger
     Dist::Zilla::Role::TextTemplate
 );
+
 
 has critic_config => (
     is      => 'ro',
@@ -37,9 +38,9 @@ has critic_config => (
 
 # there's probably a better way to get the list of files
 # that were added by this plugin... patches please??
-
 my %critic_test_filenames =
     map { $_ => 1 } __PACKAGE__->merged_section_data_names;
+
 
 sub munge_file {
     my ($self, $file) = @_;
@@ -52,6 +53,7 @@ sub munge_file {
     my $rendered = $self->fill_in_string( $template, $stash );
     $file->content( $rendered );
 }
+
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
@@ -116,5 +118,5 @@ use English qw(-no_match_vars);
 
 eval "use Test::Perl::Critic";
 plan skip_all => 'Test::Perl::Critic required to criticise code' if $@;
-Test::Perl::Critic->import( -profile => "{{ $critic_config }}" ) if "{{ $critic_config }}";
+Test::Perl::Critic->import( -profile => "{{ $critic_config }}" ) if -e "{{ $critic_config }}";
 all_critic_ok();
