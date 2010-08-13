@@ -1,26 +1,61 @@
-# 
+#
 # This file is part of Dist-Zilla-Plugin-CriticTests
-# 
+#
 # This software is copyright (c) 2009 by Jerome Quelin.
-# 
+#
 # This is free software; you can redistribute it and/or modify it under
 # the same terms as the Perl 5 programming language system itself.
-# 
+#
 use 5.008;
 use strict;
 use warnings;
 
 package Dist::Zilla::Plugin::CriticTests;
-our $VERSION = '1.100140';
+BEGIN {
+  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102250';
+}
 # ABSTRACT: tests to check your code against best practices
 
 use Moose;
+use Moose::Util qw( get_all_attribute_values );
+
+# this makes it add the sections in __DATA__ as dzil "files"
 extends 'Dist::Zilla::Plugin::InlineFiles';
+
+# and when the time comes, treat them like templates
+with qw(
+    Dist::Zilla::Role::FileMunger
+    Dist::Zilla::Role::TextTemplate
+);
+
+has critic_config => (
+    is      => 'ro',
+    isa     => 'Str',
+    default => 'perlcritic.rc',
+);
+
+
+# there's probably a better way to get the list of files
+# that were added by this plugin... patches please??
+
+my %critic_test_filenames =
+    map { $_ => 1 } __PACKAGE__->merged_section_data_names;
+
+sub munge_file {
+    my ($self, $file) = @_;
+
+    return unless exists $critic_test_filenames{ $file->name };
+
+    my $template = $file->content;
+    my $stash    = get_all_attribute_values( $self->meta, $self);
+
+    my $rendered = $self->fill_in_string( $template, $stash );
+    $file->content( $rendered );
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
-
 
 
 
@@ -32,7 +67,7 @@ Dist::Zilla::Plugin::CriticTests - tests to check your code against best practic
 
 =head1 VERSION
 
-version 1.100140
+version 1.102250
 
 =head1 SYNOPSIS
 
@@ -53,9 +88,11 @@ the following files:
 
 This plugin does not accept any option yet.
 
+=for Pod::Coverage munge_file
+
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 
@@ -79,4 +116,5 @@ use English qw(-no_match_vars);
 
 eval "use Test::Perl::Critic";
 plan skip_all => 'Test::Perl::Critic required to criticise code' if $@;
+Test::Perl::Critic->import( -profile => "{{ $critic_config }}" ) if "{{ $critic_config }}";
 all_critic_ok();
