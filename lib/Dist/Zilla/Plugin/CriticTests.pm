@@ -12,7 +12,7 @@ use warnings;
 
 package Dist::Zilla::Plugin::CriticTests;
 BEGIN {
-  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102250';
+  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102270';
 }
 # ABSTRACT: tests to check your code against best practices
 
@@ -69,13 +69,14 @@ Dist::Zilla::Plugin::CriticTests - tests to check your code against best practic
 
 =head1 VERSION
 
-version 1.102250
+version 1.102270
 
 =head1 SYNOPSIS
 
 In your dist.ini:
 
     [CriticTests]
+    critic_config = perlcritic.rc   ; relative to project root
 
 =head1 DESCRIPTION
 
@@ -88,7 +89,9 @@ the following files:
 
 =back
 
-This plugin does not accept any option yet.
+This plugin accept the C<critic_config> option, to specify your own config
+file for L<Perl::Critic>. It defaults to C<perlcritic.rc>, relative to the
+project root.
 
 =for Pod::Coverage munge_file
 
