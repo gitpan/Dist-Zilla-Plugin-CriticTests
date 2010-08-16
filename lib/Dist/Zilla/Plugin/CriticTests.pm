@@ -12,19 +12,19 @@ use warnings;
 
 package Dist::Zilla::Plugin::CriticTests;
 BEGIN {
-  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102270';
+  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102280';
 }
 # ABSTRACT: tests to check your code against best practices
 
 use Moose;
 use Moose::Util qw( get_all_attribute_values );
 
-# this makes dzil add the sections in __DATA__ as "files"
-extends 'Dist::Zilla::Plugin::InlineFiles';
+use Dist::Zilla::File::InMemory;
+use Data::Section 0.004 -setup;
 
 # and when the time comes, treat them like templates
 with qw(
-    Dist::Zilla::Role::FileMunger
+    Dist::Zilla::Role::FileGatherer
     Dist::Zilla::Role::TextTemplate
 );
 
@@ -36,22 +36,23 @@ has critic_config => (
 );
 
 
-# there's probably a better way to get the list of files
-# that were added by this plugin... patches please??
-my %critic_test_filenames =
-    map { $_ => 1 } __PACKAGE__->merged_section_data_names;
+sub gather_files {
+    my ($self) = @_;
 
+    my $data = $self->merged_section_data;
+    return unless $data and %$data;
 
-sub munge_file {
-    my ($self, $file) = @_;
+    my $stash = get_all_attribute_values( $self->meta, $self);
 
-    return unless exists $critic_test_filenames{ $file->name };
-
-    my $template = $file->content;
-    my $stash    = get_all_attribute_values( $self->meta, $self);
-
-    my $rendered = $self->fill_in_string( $template, $stash );
-    $file->content( $rendered );
+    # NB: This code is a bit generalised really, and could be forked into its
+    # own plugin.
+    for my $name ( keys %$data ){
+        my $template = ${$data->{$name}};
+        $self->add_file( Dist::Zilla::File::InMemory->new({
+            name => $name,
+            content => $self->fill_in_string( $template, $stash )
+        }));
+    }
 }
 
 
@@ -69,7 +70,7 @@ Dist::Zilla::Plugin::CriticTests - tests to check your code against best practic
 
 =head1 VERSION
 
-version 1.102270
+version 1.102280
 
 =head1 SYNOPSIS
 
@@ -93,7 +94,7 @@ This plugin accept the C<critic_config> option, to specify your own config
 file for L<Perl::Critic>. It defaults to C<perlcritic.rc>, relative to the
 project root.
 
-=for Pod::Coverage munge_file
+=for Pod::Coverage gather_file
 
 =head1 AUTHOR
 

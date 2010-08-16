@@ -23,14 +23,15 @@ my %module_build_args = (
     'Jerome Quelin'
   ],
   'dist_name' => 'Dist-Zilla-Plugin-CriticTests',
-  'dist_version' => '1.102270',
+  'dist_version' => '1.102280',
   'license' => 'perl',
   'module_name' => 'Dist::Zilla::Plugin::CriticTests',
   'recommends' => {},
   'recursive_test_files' => 1,
   'requires' => {
-    'Dist::Zilla::Plugin::InlineFiles' => '0',
-    'Dist::Zilla::Role::FileMunger' => '0',
+    'Data::Section' => '0.004',
+    'Dist::Zilla::File::InMemory' => '0',
+    'Dist::Zilla::Role::FileGatherer' => '0',
     'Dist::Zilla::Role::TextTemplate' => '0',
     'Moose' => '0',
     'Moose::Util' => '0',
