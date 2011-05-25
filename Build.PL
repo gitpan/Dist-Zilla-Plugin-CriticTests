@@ -7,13 +7,14 @@ use Module::Build 0.3601;
 
 my %module_build_args = (
   'build_requires' => {
-    'Carp' => '0',
-    'English' => '0',
     'File::Find' => '0',
+    'File::Path' => '0',
     'File::Temp' => '0',
     'Module::Build' => '0.3601',
-    'Scalar::Util' => '0',
-    'Test::More' => '0.94'
+    'Moose::Autobox' => '0',
+    'Test::DZil' => '0',
+    'Test::More' => '0.94',
+    'autodie' => '0'
   },
   'configure_requires' => {
     'Module::Build' => '0.3601'
@@ -23,7 +24,7 @@ my %module_build_args = (
     'Jerome Quelin'
   ],
   'dist_name' => 'Dist-Zilla-Plugin-CriticTests',
-  'dist_version' => '1.102280',
+  'dist_version' => '1.111450',
   'license' => 'perl',
   'module_name' => 'Dist::Zilla::Plugin::CriticTests',
   'recommends' => {},

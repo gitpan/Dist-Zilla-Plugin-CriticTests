@@ -12,7 +12,7 @@ use warnings;
 
 package Dist::Zilla::Plugin::CriticTests;
 BEGIN {
-  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.102280';
+  $Dist::Zilla::Plugin::CriticTests::VERSION = '1.111450';
 }
 # ABSTRACT: tests to check your code against best practices
 
@@ -31,10 +31,9 @@ with qw(
 
 has critic_config => (
     is      => 'ro',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
     default => 'perlcritic.rc',
 );
-
 
 sub gather_files {
     my ($self) = @_;
@@ -43,6 +42,7 @@ sub gather_files {
     return unless $data and %$data;
 
     my $stash = get_all_attribute_values( $self->meta, $self);
+    $stash->{critic_config} ||= 'perlcritic.rc';
 
     # NB: This code is a bit generalised really, and could be forked into its
     # own plugin.
@@ -70,7 +70,7 @@ Dist::Zilla::Plugin::CriticTests - tests to check your code against best practic
 
 =head1 VERSION
 
-version 1.102280
+version 1.111450
 
 =head1 SYNOPSIS
 
